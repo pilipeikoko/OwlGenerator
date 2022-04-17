@@ -32,7 +32,7 @@ namespace OwlGenerator.View
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Node0");
             this.treeView1 = new System.Windows.Forms.TreeView();
-            this.button2 = new System.Windows.Forms.Button();
+            this.Load = new System.Windows.Forms.Button();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addSubClassToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addIndividualToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -42,6 +42,7 @@ namespace OwlGenerator.View
             this.CreateThing = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.Execute = new System.Windows.Forms.Button();
+            this.addRelationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -60,18 +61,19 @@ namespace OwlGenerator.View
             treeNode1});
             this.treeView1.Size = new System.Drawing.Size(1455, 665);
             this.treeView1.TabIndex = 0;
+            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             // 
-            // button2
+            // Load
             // 
-            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.Load.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.button2.Location = new System.Drawing.Point(1317, 16);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(130, 39);
-            this.button2.TabIndex = 2;
-            this.button2.Text = "Load";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.Open_Click);
+            this.Load.Location = new System.Drawing.Point(1317, 16);
+            this.Load.Name = "Load";
+            this.Load.Size = new System.Drawing.Size(130, 39);
+            this.Load.TabIndex = 2;
+            this.Load.Text = "Load";
+            this.Load.UseVisualStyleBackColor = true;
+            this.Load.Click += new System.EventHandler(this.Open_Click);
             // 
             // contextMenuStrip1
             // 
@@ -79,10 +81,11 @@ namespace OwlGenerator.View
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addSubClassToolStripMenuItem,
             this.addIndividualToolStripMenuItem,
+            this.addRelationToolStripMenuItem,
             this.deleteToolStripMenuItem,
             this.editToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(176, 100);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(176, 124);
             // 
             // addSubClassToolStripMenuItem
             // 
@@ -160,6 +163,12 @@ namespace OwlGenerator.View
             this.Execute.UseVisualStyleBackColor = true;
             this.Execute.Click += new System.EventHandler(this.Execute_Click);
             // 
+            // addRelationToolStripMenuItem
+            // 
+            this.addRelationToolStripMenuItem.Name = "addRelationToolStripMenuItem";
+            this.addRelationToolStripMenuItem.Size = new System.Drawing.Size(175, 24);
+            this.addRelationToolStripMenuItem.Text = "Add Relation";
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
@@ -169,7 +178,7 @@ namespace OwlGenerator.View
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.CreateThing);
             this.Controls.Add(this.Save);
-            this.Controls.Add(this.button2);
+            this.Controls.Add(this.Load);
             this.Controls.Add(this.treeView1);
             this.Name = "MainWindow";
             this.Text = "MainWindow";
@@ -182,7 +191,7 @@ namespace OwlGenerator.View
         #endregion
 
         private System.Windows.Forms.TreeView treeView1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button Load;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem addSubClassToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
@@ -192,6 +201,7 @@ namespace OwlGenerator.View
         private System.Windows.Forms.ToolStripMenuItem addIndividualToolStripMenuItem;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button Execute;
+        private System.Windows.Forms.ToolStripMenuItem addRelationToolStripMenuItem;
     }
 }
 

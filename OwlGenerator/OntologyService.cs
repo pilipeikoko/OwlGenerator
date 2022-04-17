@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using AngleSharp.Common;
 using VDS.RDF;
 using VDS.RDF.Ontology;
 using VDS.RDF.Parsing;
@@ -67,16 +69,16 @@ namespace OwlGenerator
             return node.FirstOrDefault(x => x.Uri.ToString().Equals(DefaultLink + "/" + name));
         }
 
-        public void DeleteClass(OntologyGraph g, string nodeFullPath)
+        public void DeleteClass(OntologyGraph graph, string nodeFullPath)
         {
-            var triples = g.Triples
+            var triplesWhereObject = graph.Triples
                 .Where(x => x.Object.NodeType == NodeType.Uri)
                 .Select(x => (x, (UriNode) x.Object))
                 .Where(y => y.Item2.Uri.AbsoluteUri.Contains(nodeFullPath))
                 .Select(x => x.x)
                 .ToList();
 
-            var triples2 = g.Triples
+            var triplesWhereSubject = graph.Triples
                 .Where(x => x.Subject.NodeType == NodeType.Uri)
                 .Select(x => (x, (UriNode) x.Subject))
                 .Where(y => y.Item2.Uri.AbsoluteUri.Contains(nodeFullPath))
@@ -84,8 +86,8 @@ namespace OwlGenerator
                 .ToList();
 
 
-            g.Retract(triples);
-            g.Retract(triples2);
+            graph.Retract(triplesWhereObject);
+            graph.Retract(triplesWhereSubject);
         }
 
         public void UpdateUriNode(OntologyGraph graph, string parent, string name, string oldName)
@@ -145,9 +147,22 @@ namespace OwlGenerator
             SparqlQueryParser parser = new SparqlQueryParser();
             SparqlQuery query = parser.ParseFromString(queryString);
 
-            var result = graph.ExecuteQuery(query);
+            var result =(SparqlResultSet) graph.ExecuteQuery(query);
 
-            return result;
+
+            StringBuilder builder = new ();
+
+            foreach (var res in result.Results)
+            {
+                if (res.ToString().Contains("Thing"))
+                {
+                    // add res remove all symbols before thing
+                    builder.Append(res.ToString().Substring(res.ToString().IndexOf("Thing"))).Append("\n");
+                }
+            }
+
+
+            return builder.ToString();
         }
     }
 }

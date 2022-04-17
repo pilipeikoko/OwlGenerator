@@ -34,14 +34,14 @@ namespace OwlGenerator.View
         private void addSubClassToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string input = "";
-            
+
             ShowInputDialogBox(ref input, "Please enter subclass name", "Create Subclass", 300, 100);
 
             if (!string.IsNullOrEmpty(input))
             {
                 _ontologyService.CreateSubClass(_graph, GetParentNodePath(SelectedNode), input);
                 var node = SelectedNode.Nodes.Add(input, input);
-                node.ForeColor = Color.DarkGreen;
+                node.ForeColor = Color.DarkBlue;
             }
         }
 
@@ -55,7 +55,6 @@ namespace OwlGenerator.View
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DeleteAllChilds(SelectedNode);
-
         }
 
         private void DeleteAllChilds(TreeNode node)
@@ -67,6 +66,7 @@ namespace OwlGenerator.View
                     DeleteAllChilds(child);
                 }
             }
+
             _ontologyService.DeleteClass(_graph, node.FullPath.Replace("\\", "/"));
 
             node.Remove();
@@ -86,7 +86,8 @@ namespace OwlGenerator.View
 
             if (!string.IsNullOrEmpty(input))
             {
-                _ontologyService.UpdateUriNode(_graph, GetParentNodePath(SelectedNode.Parent), input,  SelectedNode.Text);
+                _ontologyService.UpdateUriNode(_graph, GetParentNodePath(SelectedNode.Parent), input,
+                    SelectedNode.Text);
                 SelectedNode.Text = input;
             }
         }
@@ -97,7 +98,7 @@ namespace OwlGenerator.View
             saveFileDialog.Filter = "RDF Files|*.rdf";
             saveFileDialog.Title = "Save an RDF File";
             saveFileDialog.ShowDialog();
-            
+
 
             _graph.SaveToFile(saveFileDialog.FileName + ".rdf");
         }
@@ -113,7 +114,7 @@ namespace OwlGenerator.View
             treeView1.Nodes.Clear();
             var nodes = _ontologyService.GetNodes(_graph);
 
-            treeView1.Nodes.Add(nodes[0].Replace("/",""), nodes[0].Replace("/", ""));
+            treeView1.Nodes.Add(nodes[0].Replace("/", ""), nodes[0].Replace("/", ""));
 
             for (int i = 1; i < nodes.Count; ++i)
             {
@@ -122,9 +123,7 @@ namespace OwlGenerator.View
                 var parentName = parent.Substring(parent.LastIndexOf('/') + 1);
 
                 var node = FindNode(parentName, treeView1.Nodes)?.Nodes.Add(name, name);
-
             }
-
         }
 
         private TreeNode FindNode(string parentName, TreeNodeCollection collection)
@@ -155,8 +154,8 @@ namespace OwlGenerator.View
             if (!string.IsNullOrEmpty(input))
             {
                 _ontologyService.CreateIndividual(_graph, GetParentNodePath(SelectedNode), input);
-                var node = SelectedNode.Nodes.Add(input, input,1);
-                node.ForeColor = Color.Yellow;
+                var node = SelectedNode.Nodes.Add(input, input, 1);
+                node.ForeColor = Color.DarkGreen;
             }
         }
 
@@ -165,8 +164,8 @@ namespace OwlGenerator.View
             string text = textBox1.Text;
 
             var result = _ontologyService.ExecuteQuery(_graph, text);
-            
-            MessageBox.Show(result.ToString());
+
+            MessageBox.Show(result.ToString(), "Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private static DialogResult ShowInputDialogBox(ref string input, string prompt, string title = "Title",
@@ -231,6 +230,10 @@ namespace OwlGenerator.View
 
             //After input has been submitted, return the input value
             return result;
+        }
+
+        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        {
         }
     }
 }
