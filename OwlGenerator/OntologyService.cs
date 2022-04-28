@@ -11,9 +11,15 @@ using static System.String;
 
 namespace OwlGenerator
 {
+
     public class OntologyService
     {
         private static string DefaultLink = "http://my.valeksdelal.meeew/";
+
+        public static void Main()
+        {
+
+        }
 
         public OntologyClass CreateClass(OntologyGraph graph, string name)
         {
@@ -139,9 +145,10 @@ namespace OwlGenerator
 
         public object ExecuteQuery(OntologyGraph graph, string text)
         {
-            SparqlParameterizedString queryString = new SparqlParameterizedString();
-
-            queryString.CommandText = text;
+            SparqlParameterizedString queryString = new ()
+            {
+                CommandText = text
+            };
 
 
             SparqlQueryParser parser = new SparqlQueryParser();
@@ -157,7 +164,7 @@ namespace OwlGenerator
                 if (res.ToString().Contains("Thing"))
                 {
                     // add res remove all symbols before thing
-                    builder.Append(res.ToString().Substring(res.ToString().IndexOf("Thing"))).Append("\n");
+                    builder.Append(res.ToString().Substring(res.ToString().IndexOf("Thing", StringComparison.Ordinal))).Append("\n");
                 }
             }
 
