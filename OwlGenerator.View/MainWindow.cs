@@ -103,6 +103,8 @@ namespace OwlGenerator.View
             _graph.SaveToFile(saveFileDialog.FileName + ".rdf");
         }
 
+        
+
         private void Open_Click(object sender, EventArgs e)
         {
             var openFileDialog = new OpenFileDialog();
@@ -322,6 +324,14 @@ namespace OwlGenerator.View
         private void SaveAsScs_Click(object sender, EventArgs e)
         {
             var text = _ontologyService.ConvertToScs(_graph);
+            var saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "SCs Files|*.scs";
+            saveFileDialog.Title = "Save an SCs File";
+            saveFileDialog.ShowDialog();
+            if (saveFileDialog.FileName != "")
+            {
+                System.IO.File.WriteAllText(saveFileDialog.FileName, text);
+            }
             MessageBox.Show(text, "Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
