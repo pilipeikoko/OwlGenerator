@@ -36,13 +36,14 @@ namespace OwlGenerator.View
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addSubClassToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addIndividualToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addRelationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Save = new System.Windows.Forms.Button();
             this.CreateThing = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.Execute = new System.Windows.Forms.Button();
-            this.addRelationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.SaveAsScs = new System.Windows.Forms.Button();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -85,33 +86,40 @@ namespace OwlGenerator.View
             this.deleteToolStripMenuItem,
             this.editToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(176, 124);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(211, 152);
             // 
             // addSubClassToolStripMenuItem
             // 
             this.addSubClassToolStripMenuItem.Name = "addSubClassToolStripMenuItem";
-            this.addSubClassToolStripMenuItem.Size = new System.Drawing.Size(175, 24);
+            this.addSubClassToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
             this.addSubClassToolStripMenuItem.Text = "Add SubClass";
             this.addSubClassToolStripMenuItem.Click += new System.EventHandler(this.addSubClassToolStripMenuItem_Click);
             // 
             // addIndividualToolStripMenuItem
             // 
             this.addIndividualToolStripMenuItem.Name = "addIndividualToolStripMenuItem";
-            this.addIndividualToolStripMenuItem.Size = new System.Drawing.Size(175, 24);
-            this.addIndividualToolStripMenuItem.Text = "Add individual";
+            this.addIndividualToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
+            this.addIndividualToolStripMenuItem.Text = "Add Individual";
             this.addIndividualToolStripMenuItem.Click += new System.EventHandler(this.AddIndividualToolStripMenuItem_Click);
+            // 
+            // addRelationToolStripMenuItem
+            // 
+            this.addRelationToolStripMenuItem.Name = "addRelationToolStripMenuItem";
+            this.addRelationToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
+            this.addRelationToolStripMenuItem.Text = "Add Relation";
+            this.addRelationToolStripMenuItem.Click += new System.EventHandler(this.addRelationToolStripMenuItem_Click);
             // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(175, 24);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
             this.deleteToolStripMenuItem.Text = "Delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
             // editToolStripMenuItem
             // 
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(175, 24);
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(210, 24);
             this.editToolStripMenuItem.Text = "Edit";
             this.editToolStripMenuItem.Click += new System.EventHandler(this.EditToolStripMenuItem_Click);
             // 
@@ -148,7 +156,7 @@ namespace OwlGenerator.View
             this.textBox1.Location = new System.Drawing.Point(151, 9);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(899, 54);
+            this.textBox1.Size = new System.Drawing.Size(785, 54);
             this.textBox1.TabIndex = 5;
             // 
             // Execute
@@ -163,17 +171,25 @@ namespace OwlGenerator.View
             this.Execute.UseVisualStyleBackColor = true;
             this.Execute.Click += new System.EventHandler(this.Execute_Click);
             // 
-            // addRelationToolStripMenuItem
+            // SaveAsScs
             // 
-            this.addRelationToolStripMenuItem.Name = "addRelationToolStripMenuItem";
-            this.addRelationToolStripMenuItem.Size = new System.Drawing.Size(175, 24);
-            this.addRelationToolStripMenuItem.Text = "Add Relation";
+            this.SaveAsScs.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.SaveAsScs.Location = new System.Drawing.Point(957, 16);
+            this.SaveAsScs.Name = "SaveAsScs";
+            this.SaveAsScs.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.SaveAsScs.Size = new System.Drawing.Size(114, 38);
+            this.SaveAsScs.TabIndex = 7;
+            this.SaveAsScs.Text = "Save as SCs";
+            this.SaveAsScs.UseVisualStyleBackColor = true;
+            this.SaveAsScs.Click += new System.EventHandler(this.SaveAsScs_Click);
             // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1459, 738);
+            this.Controls.Add(this.SaveAsScs);
             this.Controls.Add(this.Execute);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.CreateThing);
@@ -202,6 +218,7 @@ namespace OwlGenerator.View
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button Execute;
         private System.Windows.Forms.ToolStripMenuItem addRelationToolStripMenuItem;
+        private System.Windows.Forms.Button SaveAsScs;
     }
 }
 

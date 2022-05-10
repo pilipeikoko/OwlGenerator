@@ -203,7 +203,7 @@ namespace OwlGenerator.View
             okButton.Name = "okButton";
             okButton.Size = new Size(75, 30);
             okButton.Text = "&OK";
-            okButton.Location = new Point(size.Width - 80 - 80, size.Height - 45);
+            okButton.Location = new Point(size.Width - 80, size.Height - 45);
             inputBox.Controls.Add(okButton);
 
             //Create a Cancel Button
@@ -232,8 +232,110 @@ namespace OwlGenerator.View
             return result;
         }
 
+        private DialogResult ShowCreateRelationtDialogBox(ref string relation, ref string subject, string prompt,
+            string title = "Title",
+            int width = 300, int height = 200)
+        {
+            //This function creates the custom input dialog box by individually creating the different window elements and adding them to the dialog box
+
+            //Specify the size of the window using the parameters passed
+            Size size = new Size(width, height);
+            //Create a new form using a System.Windows Form
+            Form inputBox = new Form();
+
+            inputBox.FormBorderStyle = FormBorderStyle.FixedDialog;
+            inputBox.ClientSize = size;
+            //Set the window title using the parameter passed
+            inputBox.Text = title;
+
+            //Create a new label to hold the prompt
+            Label label = new Label();
+            label.Text = prompt;
+            label.Location = new Point(5, 5);
+            label.Width = size.Width - 10;
+            inputBox.Controls.Add(label);
+
+            //Create a textbox to accept the user's input
+            TextBox textBox = new TextBox();
+            textBox.Size = new Size(size.Width - 10, 23);
+            textBox.Location = new Point(5, label.Location.Y + 20);
+            textBox.Text = relation;
+            inputBox.Controls.Add(textBox);
+
+            //Create a new label to hold the prompt
+            Label label1 = new Label();
+            label1.Text = "Select object";
+            label1.Location = new Point(5, 70);
+            label1.Width = size.Width - 10;
+            inputBox.Controls.Add(label1);
+
+            //Create a textbox to accept the user's input
+            ComboBox comboBox = new ComboBox();
+            comboBox.Size = new Size(size.Width - 10, 23);
+            comboBox.Location = new Point(5, label1.Location.Y + 20);
+            comboBox.Text = relation;
+            comboBox.Items.AddRange(_ontologyService.GetAllNodesWitHPrettyName(_graph).ToArray());
+            inputBox.Controls.Add(comboBox);
+
+            //Create an OK Button 
+            Button okButton = new Button();
+            okButton.DialogResult = DialogResult.OK;
+            okButton.Name = "okButton";
+            okButton.Size = new Size(75, 30);
+            okButton.Text = "&OK";
+            okButton.Location = new Point(size.Width - 80 - 80, size.Height - 45);
+            inputBox.Controls.Add(okButton);
+
+            //Create a Cancel Button
+            Button cancelButton = new Button();
+            cancelButton.DialogResult = DialogResult.Cancel;
+            cancelButton.Name = "cancelButton";
+            cancelButton.Size = new Size(75, 30);
+            cancelButton.Text = "&Cancel";
+            cancelButton.Location = new Point(size.Width - 80, size.Height - 45);
+            inputBox.Controls.Add(cancelButton);
+
+            //Set the input box's buttons to the created OK and Cancel Buttons respectively so the window appropriately behaves with the button clicks
+            inputBox.AcceptButton = okButton;
+            inputBox.CancelButton = cancelButton;
+
+            //Show the window dialog box 
+            //inputbox in middle of screen
+            inputBox.StartPosition = FormStartPosition.CenterScreen;
+            DialogResult result = inputBox.ShowDialog();
+
+            if (result == DialogResult.OK)
+            {
+                relation = textBox.Text;
+                subject = comboBox.Text;
+            }
+
+
+            //After input has been submitted, return the input value
+            return result;
+        }
+
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
+        }
+
+        private void SaveAsScs_Click(object sender, EventArgs e)
+        {
+            var text = _ontologyService.ConvertToScs(_graph);
+            MessageBox.Show(text, "Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void addRelationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string relation = "";
+            string subject = "";
+            ShowCreateRelationtDialogBox(ref relation, ref subject, "Please relation name", "Create relation", 300,
+                200);
+
+            if (relation != "")
+            {
+                _ontologyService.AddTriple(_graph, GetParentNodePath(SelectedNode), subject, relation);
+            }
         }
     }
 }

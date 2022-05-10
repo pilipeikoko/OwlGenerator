@@ -11,14 +11,12 @@ using static System.String;
 
 namespace OwlGenerator
 {
-
     public class OntologyService
     {
         private static string DefaultLink = "http://my.valeksdelal.meeew/";
 
         public static void Main()
         {
-
         }
 
         public OntologyClass CreateClass(OntologyGraph graph, string name)
@@ -54,7 +52,8 @@ namespace OwlGenerator
 
         public Individual CreateIndividual(OntologyGraph graph, string className, string name)
         {
-            var generatedClass = graph.CreateIndividual(Create(graph, className + "/" + name), FindUriNode(graph, className));
+            var generatedClass =
+                graph.CreateIndividual(Create(graph, className + "/" + name), FindUriNode(graph, className));
 
             generatedClass.AddLabel(name, "en");
 
@@ -140,12 +139,119 @@ namespace OwlGenerator
                 .ToList();
 
 
-            return nodes.OrderBy(x=>x).ToList();
+            return nodes.OrderBy(x => x).ToList();
+        }
+
+        public List<string> GetAllNodesWitHPrettyName(OntologyGraph graph)
+        {
+            var nodes = graph.Nodes
+                .Where(x => x.NodeType == NodeType.Uri)
+                .Select(x => (UriNode) x)
+                .Where(x => x.Uri.ToString().Contains(DefaultLink))
+                .Select(x => x.Uri.AbsoluteUri.Replace(DefaultLink, Empty))
+                .Where(x => graph.Triples
+                    .Any(y => (y.Object.NodeType == NodeType.Uri && ((UriNode) y.Object).Uri.AbsoluteUri.Contains(x))
+                              || (y.Subject.NodeType == NodeType.Uri &&
+                                  ((UriNode) y.Subject).Uri.AbsoluteUri.Contains(x))))
+                .ToList();
+
+
+            return nodes.OrderBy(x => x).ToList();
+        }
+
+        public string ConvertToScs(OntologyGraph graph)
+        {
+            var allNodes = graph.Triples
+                .Where(x => x.Predicate.NodeType == NodeType.Uri)
+                .Select(x => ((UriNode) x.Predicate, x.Subject))
+                .Where(x => x.Item1.Uri.ToString() == "http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
+                .Select(x => (UriNode) x.Subject)
+                .Select(x =>
+                    x.Uri.ToString().Substring(x.Uri.ToString().LastIndexOf("/", StringComparison.Ordinal) + 1))
+                .ToList();
+
+            var classes = graph.OwlClasses
+                .Select(x => x?.Label?.FirstOrDefault())
+                .Select(x => new
+                {
+                    Value = x?.Value,
+                    Language = x?.Language
+                })
+                .ToList();
+
+            var individuals = allNodes
+                .Where(x => classes
+                    .FirstOrDefault(y => y.Value == x) == null)
+                .ToList();
+
+            var individualsWithParent = individuals
+                .Select(x => (Individual: x, Parent: GetIndividualParent(graph, x)))
+                .ToList();
+
+            var classesWithParent = classes
+                .Select(x => (Class: x.Value, Language: x.Language, Parent: GetClassParent(graph, x.Value)))
+                .ToList();
+
+            var customTriples = graph.Triples.Where(x => x.Predicate.NodeType == NodeType.Uri)
+                .Select(x => (x, (IUriNode) x.Predicate))
+                .Where(x => x.Item2.Uri.ToString().Contains(DefaultLink))
+                .Select(x => (Object: x.x.Object, Predicate: x.x.Predicate, Subject: x.x.Subject))
+                .Where(x => x.Object.NodeType == NodeType.Uri && x.Subject.NodeType == NodeType.Uri &&
+                            x.Predicate.NodeType == NodeType.Uri)
+                .Select(x => (Object: (IUriNode) x.Object, Subject: (IUriNode) x.Subject,
+                    Predicate: (IUriNode) x.Predicate))
+                .Select(x =>
+                    (Object: x.Object.Uri.ToString().Substring(x.Object.Uri.ToString().LastIndexOf("/", StringComparison.Ordinal) + 1),
+                        Predicate: x.Predicate.Uri.ToString()
+                            .Substring(x.Predicate.Uri.ToString().LastIndexOf("/", StringComparison.Ordinal) + 1),
+                        Subject: x.Subject.Uri.ToString()
+                            .Substring(x.Subject.Uri.ToString().LastIndexOf("/", StringComparison.Ordinal) + 1)))
+                .ToList();
+
+            SemanticService service = new();
+
+            var scs = service.ConvertToScs(classesWithParent, individualsWithParent, customTriples);
+
+
+            return scs;
+        }
+
+        private string GetIndividualParent(OntologyGraph graph, string value)
+        {
+            var first = graph.Triples
+                .Where(x => (x.Subject.NodeType == NodeType.Uri && x.Object.NodeType == NodeType.Uri))
+                .Select(x => ((UriNode) x.Object, (UriNode) x.Subject))
+                .Where(x => x.Item2.Uri.ToString().Contains(value))
+                .Select(x => x.Item1)
+                .ToList()
+                .FirstOrDefault();
+
+            return first?.Uri.ToString()[(first.Uri.ToString().LastIndexOf("/", StringComparison.Ordinal) + 1)..];
+        }
+
+        private string GetClassParent(OntologyGraph graph, string value)
+        {
+            if (value == "Thing")
+            {
+                return null;
+            }
+
+            var first = graph.Triples
+                .Where(x => (x.Subject.NodeType == NodeType.Uri && x.Object.NodeType == NodeType.Uri &&
+                             x.Predicate.NodeType == NodeType.Uri))
+                .Select(x => ((UriNode) x.Object, (UriNode) x.Subject, (UriNode) x.Predicate))
+                .Where(x => (x.Item2.Uri.ToString().Contains(value) &&
+                             x.Item3.Uri.ToString() == "http://www.w3.org/2000/01/rdf-schema#subClassOf"))
+                .Select(x => x.Item1)
+                .ToList()
+                .FirstOrDefault();
+
+            return first?.Uri.ToString()[(first.Uri.ToString().LastIndexOf("/", StringComparison.Ordinal) + 1)..];
         }
 
         public object ExecuteQuery(OntologyGraph graph, string text)
         {
-            SparqlParameterizedString queryString = new ()
+            SparqlParameterizedString queryString = new()
             {
                 CommandText = text
             };
@@ -154,22 +260,51 @@ namespace OwlGenerator
             SparqlQueryParser parser = new SparqlQueryParser();
             SparqlQuery query = parser.ParseFromString(queryString);
 
-            var result =(SparqlResultSet) graph.ExecuteQuery(query);
+            var result = (SparqlResultSet) graph.ExecuteQuery(query);
 
 
-            StringBuilder builder = new ();
+            StringBuilder builder = new();
 
             foreach (var res in result.Results)
             {
                 if (res.ToString().Contains("Thing"))
                 {
                     // add res remove all symbols before thing
-                    builder.Append(res.ToString().Substring(res.ToString().IndexOf("Thing", StringComparison.Ordinal))).Append("\n");
+                    builder.Append(res.ToString().Substring(res.ToString().IndexOf("Thing", StringComparison.Ordinal)))
+                        .Append("\n");
                 }
             }
 
 
             return builder.ToString();
+        }
+
+        private IUriNode EnsureRelation(OntologyGraph graph, string relationName)
+        {
+            var node = graph.AllNodes.Where(x => x.NodeType == NodeType.Uri).Select(x => (IUriNode) x).ToList();
+
+            var first = node.FirstOrDefault(x => x.Uri.ToString().Equals(DefaultLink + "relation/" + relationName));
+
+            if (first == null)
+            {
+                first = graph.CreateUriNode(new Uri(DefaultLink + "relation/" + relationName));
+            }
+
+            return first;
+        }
+
+        public void AddTriple(OntologyGraph graph, string objectName, string subjectName, string relation)
+        {
+            UriNode objectNode = FindUriNode(graph, objectName);
+            UriNode subjectNode = FindUriNode(graph, subjectName[1..]);
+            IUriNode relationNode = EnsureRelation(graph, relation);
+
+            if (objectNode != null && subjectNode != null && relationNode != null)
+            {
+                Triple triple = new Triple(subjectNode, relationNode, objectNode);
+
+                graph.Assert(triple);
+            }
         }
     }
 }
